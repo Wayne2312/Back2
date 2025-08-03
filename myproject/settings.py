@@ -1,7 +1,7 @@
 from pathlib import Path
-import mpesa
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,8 +54,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "myproject.wsgi.application"
-
-import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(  # No extra colons or annotations
