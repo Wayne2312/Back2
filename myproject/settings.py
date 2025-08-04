@@ -89,11 +89,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [
-    "https://front2-opal.vercel.app",
-    "https://front2-git-main-wayne-kimanis-projects.vercel.app",
-    "https://front2-flj9tgdx9-wayne-kimanis-projects.vercel.app",
-]
+CORS_ALLOWED_ORIGINS = ['*']
 
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SAMESITE = None
