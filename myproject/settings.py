@@ -57,7 +57,7 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 
 DATABASES = {
     'default': dj_database_url.config(  # No extra colons or annotations
-        default=os.getenv('DATABASE_URL', 'postgresql://mealy_use:ZY3rhr7dO9H4vwgetMHXsu3anIhkDU7D@dpg-d25s98ggjchc73dmm9sg-a.oregon-postgres.render.com/mealy_db_nxhv')
+        default=os.getenv('DATABASE_URL', 'postgresql://mealy_use:EfYelVV2PQND39JKpZib7hEXqtkcPHcq@dpg-d287mch5pdvs7388s4q0-a.oregon-postgres.render.com/mealy_db1')
     )
 }
 
@@ -90,9 +90,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-    "https://mealy-frontend-th26.vercel.app",
-    "https://mealy-frontend-th26-git-main-wayne-kimanis-projects.vercel.app",
-    "https://mealy-frontend-th26-nugq62axc-wayne-kimanis-projects.vercel.app",
+    "https://front2-opal.vercel.app",
+    "https://front2-git-main-wayne-kimanis-projects.vercel.app",
+    "https://front2-flj9tgdx9-wayne-kimanis-projects.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
