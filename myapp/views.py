@@ -35,7 +35,6 @@ def get_user_from_jwt(request):
     auth_header = request.META.get('HTTP_AUTHORIZATION')
     if not auth_header or not auth_header.startswith('Bearer '):
         return None
-
     token = auth_header.split(' ')[1]
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
@@ -111,34 +110,28 @@ def login_view(request):
             data = json.loads(request.body)
             email = data.get('email')
             password = data.get('password')
-
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 access_token = generate_jwt_token(user)
-
                 user_data = {
                     'id': user.id,
                     'email': user.email,
                     'name': user.first_name if user.first_name else user.username,
                     'role': 'admin' if user.is_staff else 'customer',
                 }
-                print(f"User {email} logged in successfully.")
                 return JsonResponse({
                     'message': 'Login successful',
                     'user': user_data,
                     'access_token': access_token
                 }, status=200)
             else:
-                print(f"Login failed for email: {email}")
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
         except Exception as e:
-            print(f"An error occurred during login: {e}")
             return JsonResponse({'error': 'An internal server error occurred'}, status=500)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed for login'}, status=405)
-
 
 @csrf_exempt
 def me_view(request):
@@ -152,51 +145,38 @@ def me_view(request):
                 'role': 'admin' if user.is_staff else 'customer',
                 'is_authenticated': True
             }
-            print(f"Returning user data for: {user.email}")
             return JsonResponse(user_data, status=200)
         else:
-            print("User is not authenticated for /api/auth/me")
             return JsonResponse({'message': 'User not authenticated'}, status=401)
     else:
         return JsonResponse({'error': 'Only GET requests are allowed for /auth/me'}, status=405)
-
 
 @csrf_exempt
 def register_view(request):
     if request.method != 'POST':
         return JsonResponse(
-            {'error': 'Only POST requests are allowed for registration'}, 
+            {'error': 'Only POST requests are allowed for registration'},
             status=405
         )
-
     try:
-        # Parse and validate JSON
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse(
-                {'error': 'Invalid JSON in request body'}, 
+                {'error': 'Invalid JSON in request body'},
                 status=400
             )
-
-        # Extract and sanitize inputs
         email = data.get('email', '').strip().lower()
         password = data.get('password', '').strip()
         name = data.get('name', '').strip()
         role = data.get('role', 'customer').strip().lower()
-
-        # Comprehensive validation
         errors = {}
-        
-        # Email validation
         if not email:
             errors['email'] = 'Email is required'
         elif not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
             errors['email'] = 'Enter a valid email address'
         elif len(email) > 254:
             errors['email'] = 'Email is too long (max 254 characters)'
-        
-        # Password validation
         if not password:
             errors['password'] = 'Password is required'
         elif len(password) < 8:
@@ -205,34 +185,25 @@ def register_view(request):
             errors['password'] = 'Password is too long (max 128 characters)'
         elif not any(char.isdigit() for char in password):
             errors['password'] = 'Password must contain at least one number'
-        
-        # Name validation
         if not name:
             errors['name'] = 'Name is required'
         elif len(name) > 150:
             errors['name'] = 'Name is too long (max 150 characters)'
         elif not re.match(r'^[a-zA-Z\s\-\.\']+$', name):
             errors['name'] = 'Name contains invalid characters'
-        
-        # Role validation
         valid_roles = ['customer', 'admin']
         if role not in valid_roles:
             errors['role'] = f'Role must be one of: {", ".join(valid_roles)}'
-
         if errors:
             return JsonResponse(
-                {'errors': errors}, 
+                {'errors': errors},
                 status=400
             )
-
-        # Check for existing user
         if User.objects.filter(email=email).exists():
             return JsonResponse(
-                {'error': 'User with this email already exists'}, 
+                {'error': 'User with this email already exists'},
                 status=409
             )
-
-        # Create user
         try:
             user = User.objects.create_user(
                 username=email,
@@ -240,17 +211,11 @@ def register_view(request):
                 password=password,
                 first_name=name
             )
-            
-            # Set staff/superuser status if admin
             if role == 'admin':
                 user.is_staff = True
                 user.is_superuser = True
                 user.save()
-
-            # Generate JWT token
             access_token = generate_jwt_token(user)
-
-            # Prepare response data
             response_data = {
                 'message': 'Registration successful',
                 'user': {
@@ -261,37 +226,18 @@ def register_view(request):
                 },
                 'access_token': access_token
             }
-
-            # Log successful registration (without sensitive data)
-            logger.info(
-                f"New user registered: {user.email} (ID: {user.id})",
-                extra={'user_id': user.id, 'email': user.email}
-            )
-
             return JsonResponse(
-                response_data, 
+                response_data,
                 status=201
             )
-
         except IntegrityError:
-            logger.error(
-                "IntegrityError during user creation",
-                exc_info=True,
-                extra={'email': email}
-            )
             return JsonResponse(
-                {'error': 'User creation failed due to database error'}, 
+                {'error': 'User creation failed due to database error'},
                 status=500
             )
-
     except Exception as e:
-        logger.error(
-            "Unexpected error during registration",
-            exc_info=True,
-            extra={'request_data': str(data)[:100]}  # Log first 100 chars of data
-        )
         return JsonResponse(
-            {'error': 'An unexpected error occurred during registration'}, 
+            {'error': 'An unexpected error occurred during registration'},
             status=500
         )
 
