@@ -9,7 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-d8b=hoi%x8t^n@$2e554uy4-he9lz76u0gz8b#p35mqzx&#eu@"
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://front2-opal.vercel.app",
+    "https://front2-git-main-wayne-kimanis-projects.vercel.app",
+    "https://front2-78komgbwb-wayne-kimanis-projects.vercel.app",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
