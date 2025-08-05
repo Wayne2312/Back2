@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .models import Meal, DailyMenu, Order, OrderItem
 from django_daraja.mpesa.core import MpesaClient
+import re  
+from django.db import IntegrityError
 
 
 JWT_SECRET_KEY = getattr(settings, 'JWT_SECRET_KEY', os.environ.get('JWT_SECRET_KEY', 'your-super-secret-jwt-key-change-this'))
