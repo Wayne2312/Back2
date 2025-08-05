@@ -120,3 +120,9 @@ MPESA_CONFIG = {
     'TRANSACTION_TYPE': 'CustomerPayBillOnline',
     'BUSINESS_SHORT_CODE': os.getenv('MPESA_SHORT_CODE'),
 }
+
+ALLOWED_HOSTS = [
+    'https://mealy-4db6.onrender.com',  # Your Render.com hostname
+    'localhost',                  # For local testing
+    '127.0.0.1',                 # For local testing
+]
